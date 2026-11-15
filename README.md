@@ -7,7 +7,7 @@ Manually wake a saved Paseo host through Home Assistant, another HTTP service, o
 Requires an awake executor with Node 22 or later, npm, and Paseo 0.14 or later with plugins enabled. Install on the executor, not only on the computer that will sleep:
 
 ```sh
-paseo plugin install github:bytenik/paseo-wake-hosts --ref v0.1.0 --id wake-hosts
+paseo plugin install git:bytenik/paseo-wake-hosts --ref v0.1.0 --id wake-hosts
 ```
 
 The manifest declares a locked `npm ci --omit=dev --ignore-scripts` preparation step to install the Zod runtime dependency. Paseo compiles the TypeScript entries. No separate build or patched app is needed.
