@@ -73,4 +73,4 @@ The review sequence is spec agreement, plugin implementation, focused unit and l
 
 Manual plugin UI, server-side profile execution, approval checks, and focused tests are implemented. The companion app/SDK prototype is excluded from delivery and must not be deployed for this feature.
 
-The Home Assistant wake-only action, physical wake workflow, and macOS/Windows runtime behavior remain unvalidated. No public repository, pull request, or Cafe submission has been created for this feature.
+The Home Assistant wake-only action, physical wake workflow, and macOS/Windows runtime behavior remain unvalidated. Distribution uses a public GitHub repository. Cafe submission follows interface screenshots and the remaining validation.

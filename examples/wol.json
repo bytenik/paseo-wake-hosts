@@ -1,0 +1,15 @@
+{
+  "executorTrusted": false,
+  "targets": [
+    {
+      "serverId": "srv_lab",
+      "name": "Lab workstation",
+      "transport": {
+        "type": "wol",
+        "mac": "02:11:22:33:44:55",
+        "network": "192.168.20.0/24",
+        "port": 9
+      }
+    }
+  ]
+}

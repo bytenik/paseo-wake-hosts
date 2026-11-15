@@ -1,0 +1,14 @@
+{
+  "executorTrusted": false,
+  "targets": [
+    {
+      "serverId": "srv_workstation",
+      "name": "Workstation",
+      "transport": {
+        "type": "http",
+        "url": "https://homeassistant.example/api/webhook/REPLACE_WITH_WAKE_ONLY_WEBHOOK_ID",
+        "method": "POST"
+      }
+    }
+  ]
+}

@@ -2,18 +2,42 @@
   "name": "paseo-wake-hosts",
   "version": "0.1.0",
   "private": true,
+  "description": "Manually wake Paseo hosts through an approved daemon using HTTP or Wake-on-LAN.",
+  "homepage": "https://github.com/bytenik/paseo-wake-hosts#readme",
+  "bugs": {
+    "url": "https://github.com/bytenik/paseo-wake-hosts/issues"
+  },
+  "license": "MIT",
+  "author": "David Pfeffer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bytenik/paseo-wake-hosts.git"
+  },
+  "files": [
+    "paseo-plugin.json",
+    "index.client.tsx",
+    "index.server.ts",
+    "client/",
+    "server/",
+    "shared/",
+    "OVERVIEW.md",
+    "README.md",
+    "LICENSE",
+    "!**/*.test.*"
+  ],
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "oxlint",
-    "format": "oxfmt ."
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check ."
   },
   "dependencies": {
-    "@getpaseo/plugin": "^0.15.4",
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@getpaseo/plugin": "^0.15.4",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "oxfmt": "^0.50.0",
@@ -22,5 +46,8 @@
     "react-native": "0.81.5",
     "typescript": "^5.9.3",
     "vitest": "^4.1.7"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
