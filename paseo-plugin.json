@@ -1,7 +1,7 @@
 {
   "id": "wake-hosts",
   "name": "Wake hosts",
-  "description": "Manually wake Paseo hosts through an selected daemon using HTTP or Wake-on-LAN.",
+  "description": "Manually wake Paseo hosts through the selected daemon using HTTP or Wake-on-LAN.",
   "requirements": {
     "paseo": ">=0.14.0"
   },

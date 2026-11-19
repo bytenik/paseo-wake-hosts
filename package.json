@@ -2,7 +2,7 @@
   "name": "paseo-wake-hosts",
   "version": "0.1.1",
   "private": true,
-  "description": "Manually wake Paseo hosts through an selected daemon using HTTP or Wake-on-LAN.",
+  "description": "Manually wake Paseo hosts through the selected daemon using HTTP or Wake-on-LAN.",
   "homepage": "https://github.com/bytenik/paseo-wake-hosts#readme",
   "bugs": {
     "url": "https://github.com/bytenik/paseo-wake-hosts/issues"
