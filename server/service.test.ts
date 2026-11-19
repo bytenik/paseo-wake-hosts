@@ -1,10 +1,9 @@
 import { expect, it, vi } from "vitest";
-import { executeWake, target } from "../shared/contracts.ts";
+import { executeWake, target, preferences } from "../shared/contracts.ts";
 import { createWakeService } from "./service.ts";
 
 function fixture() {
   const settings = {
-    executorTrusted: false,
     targets: [
       target.parse({
         serverId: "pc",
@@ -26,21 +25,18 @@ function fixture() {
   return { settings, execute, service };
 }
 
-it("rejects an unapproved executor and rechecks revocation on every request", async () => {
-  const { settings, execute, service } = fixture();
-  await expect(service.wake("pc")).rejects.toThrow("Approve this executor");
-  expect(execute).not.toHaveBeenCalled();
-  settings.executorTrusted = true;
+it("executes a configured target without a separate approval flag", async () => {
+  const { execute, service } = fixture();
   await expect(service.wake("pc")).resolves.toEqual({ accepted: true });
-  settings.executorTrusted = false;
-  await expect(service.wake("pc")).rejects.toThrow("Approve this executor");
   expect(execute).toHaveBeenCalledTimes(1);
+});
+it("accepts legacy settings while dropping the obsolete approval field", () => {
+  const { settings } = fixture();
+  expect(preferences.schema.parse({ ...settings, executorTrusted: false })).toEqual(settings);
 });
 it("returns only display metadata and resolves credentials exclusively for server delivery", async () => {
   const { settings, execute, service } = fixture();
-  settings.executorTrusted = true;
   expect(await service.list()).toEqual({
-    executorTrusted: true,
     targets: [{ serverId: "pc", name: "PC", timeoutMs: 120000 }],
   });
   await service.wake("pc");
@@ -51,8 +47,7 @@ it("returns only display metadata and resolves credentials exclusively for serve
   expect(settings.targets[0].transport).not.toHaveProperty("headers.Authorization");
 });
 it("refuses unknown targets and arbitrary transports from RPC callers", async () => {
-  const { settings, execute, service } = fixture();
-  settings.executorTrusted = true;
+  const { execute, service } = fixture();
   await expect(service.wake("unknown")).rejects.toThrow("No wake action");
   expect(execute).not.toHaveBeenCalled();
   expect(() =>
@@ -61,7 +56,6 @@ it("refuses unknown targets and arbitrary transports from RPC callers", async ()
 });
 it("fails closed when an environment credential is unavailable", async () => {
   const { settings, execute } = fixture();
-  settings.executorTrusted = true;
   const service = createWakeService(async () => settings, { execute }, {});
   await expect(service.wake("pc")).rejects.toThrow("credential environment variable is missing");
   expect(execute).not.toHaveBeenCalled();

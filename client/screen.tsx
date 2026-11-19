@@ -62,7 +62,6 @@ export function WakeScreen({ theme, host }: PluginScreenProps) {
     [execute, host.id],
   );
   const [profiles, setProfiles] = useState<{
-    executorTrusted: boolean;
     targets: TargetSummary[];
   } | null>(null);
   const [error, setError] = useState(false);
@@ -101,8 +100,8 @@ export function WakeScreen({ theme, host }: PluginScreenProps) {
     >
       <Text style={{ color: theme.colors.foreground }}>Executor: {host.label}</Text>
       <Text style={{ color: theme.colors.foregroundMuted }}>
-        Select an approved online executor using the host picker. Opening this screen never sends a
-        wake action.
+        Select an online executor using the host picker. Opening this screen never sends a wake
+        action.
       </Text>
       {!executorOnline ? (
         <Text style={{ color: theme.colors.foreground }}>
@@ -117,11 +116,6 @@ export function WakeScreen({ theme, host }: PluginScreenProps) {
       {!profiles && !error ? (
         <Text style={{ color: theme.colors.foreground }}>Loading targets…</Text>
       ) : null}
-      {profiles && !profiles.executorTrusted ? (
-        <Text style={{ color: theme.colors.foreground }}>
-          Approve this executor in Settings → Plugins → Wake hosts before using it.
-        </Text>
-      ) : null}
       {profiles?.targets.length === 0 ? (
         <Text style={{ color: theme.colors.foreground }}>
           No targets configured. Add them in Settings → Plugins → Wake hosts.
@@ -133,7 +127,7 @@ export function WakeScreen({ theme, host }: PluginScreenProps) {
           target={target}
           controller={controller}
           theme={theme}
-          disabled={!profiles.executorTrusted || !executorOnline}
+          disabled={!executorOnline}
           online={hosts.some(
             (entry) => entry.serverId === target.serverId && entry.status === "online",
           )}

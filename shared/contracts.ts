@@ -45,7 +45,7 @@ export const preferences = defineSettings({
   scope: "host",
   version: 1,
   schema: z
-    .object({ executorTrusted: z.boolean().default(false), targets: z.array(target).default([]) })
+    .object({ targets: z.array(target).default([]) })
     .refine(
       ({ targets }) => new Set(targets.map((entry) => entry.serverId)).size === targets.length,
       "Configure each Paseo host only once",
@@ -56,7 +56,7 @@ export type TargetSummary = z.infer<typeof summary>;
 export const listTargets = defineRpc({
   name: "targets.list",
   input: z.object({}),
-  output: z.object({ executorTrusted: z.boolean(), targets: z.array(summary) }),
+  output: z.object({ targets: z.array(summary) }),
 });
 export const inspection = z.discriminatedUnion("type", [
   z.object({ type: z.literal("http"), origin: httpUrl }),

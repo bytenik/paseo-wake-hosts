@@ -11,33 +11,31 @@ App/core changes, agent right-click menu additions, built-in offline-page change
 ## Manual workflow
 
 1. Open Wake hosts from the plugin sidebar entry or global Command Center action.
-2. Select an approved online plugin installation using the existing host picker.
+2. Select an online plugin installation using the existing host picker.
 3. Press Wake beside a configured offline target.
 4. Show progress until that target's authenticated Paseo connection becomes online, or expose an error with explicit Retry.
 
-The target must be present in the client's saved hosts. The screen disables waking for online targets, unknown targets, unapproved executors, and offline executors. Default reconnection timeout is 120 seconds, configurable from 1 to 300 seconds. A successful HTTP response or UDP send is not proof of reconnection.
+The target must be present in the client's saved hosts. The screen disables waking for online targets, unknown targets, and offline executors. Default reconnection timeout is 120 seconds, configurable from 1 to 300 seconds. A successful HTTP response or UDP send is not proof of reconnection.
 
 ## Execution and configuration
 
 Each plugin installation is an independent executor with its own host-side target profiles. A profile contains a saved target server ID, display name, reconnection timeout, and one transport. The first release uses JSON settings with revision-aware saves.
 
-The screen calls only its selected installation's existing plugin RPC. Wake requests contain a configured target ID, never a client-supplied URL or transport. The server reloads settings, validates approval and the target ID, resolves credentials locally, and sends the configured action.
+The screen calls only its selected installation's existing plugin RPC. Wake requests contain a configured target ID, never a client-supplied URL or transport. The server reloads settings, validates the target ID, resolves credentials locally, and sends the configured action.
 
-There is no automatic discovery, executor failover, shared plan distribution, or profile replication in this release. Another approved installation can be selected manually if it has an appropriate profile. Cross-host execution through new app APIs is excluded.
+There is no automatic discovery, executor failover, shared plan distribution, or profile replication in this release. Another installation can be selected manually if it has an appropriate profile. Cross-host execution through new app APIs is excluded.
 
-## Trust
+## Configuration and access
 
-Remote executors require explicit approval. The implementation stores `executorTrusted`, default false, in each installation's settings and checks it server-side on every wake request. Selecting an installation does not approve it; revocation blocks subsequent requests.
+Configuring wake targets and credentials on a daemon establishes it as an executor. There is no separate approval flag or local/remote trust classification. Existing Paseo access controls govern access to that installation. Wake requests can select only configured target IDs; credentials remain on the executor.
 
-The product preference is implicit trust for the local daemon. The inspected public plugin API does not expose a reliable local-daemon identity. The first release therefore conservatively requires explicit approval for local installations too. It does not infer locality or trust from labels, addresses, or platform names. Automatic local approval is deferred until a supported identification mechanism is available.
-
-Approval applies to that executor's configured profiles. It is not a new access-control boundary against users or other trusted plugins already authorized to manage the daemon.
+Legacy settings containing `executorTrusted` are accepted, but the obsolete field is ignored and omitted when settings are saved. The setting version remains compatible with existing target profiles.
 
 ## HTTP and Home Assistant
 
 HTTP supports POST, PUT, and PATCH, HTTP(S) URLs without embedded username/password, configurable headers, and an optional string body capped at 64 KiB. Request timeout defaults to 10 seconds and is bounded from 100 milliseconds to 30 seconds. Non-2xx responses fail. Redirects are refused.
 
-Authorization headers can reference environment variables on the selected executor. Ordinary Wake screen RPCs return only target metadata and approval state; they never return transport plans or resolved credentials. The settings editor can display stored URLs and literal headers to clients authorized to edit that installation. Settings are ordinary JSON, not a secret vault; webhook URLs are credentials too.
+Authorization headers can reference environment variables on the selected executor. Ordinary Wake screen RPCs return only target metadata; they never return transport plans or resolved credentials. The settings editor can display stored URLs and literal headers to clients authorized to edit that installation. Settings are ordinary JSON, not a secret vault; webhook URLs are credentials too.
 
 The endpoint must expose a repeatable wake-only operation. A disconnected daemon does not prove the computer is asleep. Blind power pulses, toggles, and mains cycling can shut down an awake machine and are unsuitable. The initial Home Assistant power card needs a verified device-specific wake-only action before live configuration.
 
@@ -58,7 +56,7 @@ Transport errors omit endpoint URLs, authorization headers, and response bodies.
 - Works with published SDK types and an unmodified compatible Paseo release.
 - Sidebar and Command Center actions open the manual screen without sending.
 - Only pressing Wake or Retry requests delivery.
-- Server rejects unapproved executors, revoked approval, unknown targets, and arbitrary transport input.
+- Server rejects unknown targets and arbitrary transport input.
 - Credentials resolve on the executor and are absent from target metadata.
 - Concurrent clicks coalesce; already-online targets and reconnection before delivery suppress sending.
 - Acceptance remains pending until the target reconnects; timeout, delivery failure, disposal, and late errors have defined behavior.
@@ -71,6 +69,6 @@ The review sequence is spec agreement, plugin implementation, focused unit and l
 
 ## Delivery status
 
-Manual plugin UI, server-side profile execution, approval checks, and focused tests are implemented. The companion app/SDK prototype is excluded from delivery and must not be deployed for this feature.
+Manual plugin UI, server-side profile execution, focused tests are implemented. The companion app/SDK prototype is excluded from delivery and must not be deployed for this feature.
 
 The Home Assistant wake-only action, physical wake workflow, and macOS/Windows runtime behavior remain unvalidated. Distribution uses a public GitHub repository. Cafe submission follows interface screenshots and the remaining validation.

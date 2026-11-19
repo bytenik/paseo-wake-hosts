@@ -30,9 +30,8 @@ export function Configuration({ theme, host }: PluginSurfaceProps) {
   return (
     <View style={{ gap: 16 }}>
       <Text style={{ color: theme.colors.foreground }}>
-        Selected executor: {host.label}. Set executorTrusted to true only for a daemon approved to
-        send these wake actions. Credentials remain on this daemon. Refresh the Wake hosts screen
-        after saving.
+        Selected executor: {host.label}. Configure its wake targets here. Credentials remain on this
+        daemon. Refresh the Wake hosts screen after saving.
       </Text>
       <SettingsSection title="Wake targets">
         <SettingsCard>

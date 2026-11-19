@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+- Remove the redundant executor approval setting. Configured targets can be woken directly on the selected daemon.
+- Preserve compatibility with existing settings; the obsolete approval field is ignored.
+- Keep wake credentials and transport selection on the executor.
+
 ## 0.1.0
 
 Initial preview release.

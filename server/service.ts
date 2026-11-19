@@ -2,7 +2,6 @@ import type { WakeTarget, WakeTransport } from "../shared/contracts.ts";
 import { createExecutor } from "./executor.ts";
 
 interface WakeSettings {
-  executorTrusted: boolean;
   targets: WakeTarget[];
 }
 
@@ -17,14 +16,11 @@ export function createWakeService(
     async list() {
       const settings = await read();
       return {
-        executorTrusted: settings.executorTrusted,
         targets: settings.targets.map(({ transport: _transport, ...summary }) => summary),
       };
     },
     async wake(serverId: string) {
       const settings = await read();
-      if (!settings.executorTrusted)
-        throw new Error("Approve this executor in Wake hosts settings before using it");
       const entry = settings.targets.find((item) => item.serverId === serverId);
       if (!entry) throw new Error("No wake action is configured for this host");
       if (entry.transport.type === "wol") return executor.execute(serverId, entry.transport);

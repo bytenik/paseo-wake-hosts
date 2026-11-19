@@ -7,7 +7,7 @@ Manually wake a saved Paseo host through Home Assistant, another HTTP service, o
 Requires an awake executor with Node 22 or later, npm, and Paseo 0.14 or later with plugins enabled. Install on the executor, not only on the computer that will sleep:
 
 ```sh
-paseo plugin install git:bytenik/paseo-wake-hosts --ref v0.1.0 --id wake-hosts
+paseo plugin install git:bytenik/paseo-wake-hosts --ref v0.1.1 --id wake-hosts
 ```
 
 The manifest declares a locked `npm ci --omit=dev --ignore-scripts` preparation step to install the Zod runtime dependency. Paseo compiles the TypeScript entries. No separate build or patched app is needed.
@@ -21,15 +21,15 @@ The initial release is a preview. Linux unit and loopback HTTP/UDP integration t
 ## Use
 
 1. Install the plugin on a machine that stays awake, such as a home server. Enable plugins on that daemon.
-2. Open **Settings → Plugins → Wake hosts**, select that executor, and configure its targets. Set `executorTrusted` to `true` only for an approved executor.
+2. Open **Settings → Plugins → Wake hosts**, select that executor, and configure its targets.
 3. Open **Wake hosts** from the sidebar or search for it in Command Center (⌘K on macOS, Ctrl+K on Windows/Linux).
-4. Select the approved online executor using the screen's host picker, then press **Wake** beside a target.
+4. Select the online executor using the screen's host picker, then press **Wake** beside a target.
 
 The screen shows progress until the target's authenticated Paseo connection is online. An HTTP success or sent UDP packet alone does not count as waking. Targets must already exist in the app's saved hosts so their reconnection can be observed. Opening a workspace, foregrounding the app, or opening the Wake screen never sends a wake request.
 
-Execution is manual on the selected installation. The plugin does not add an agent right-click menu item, modify the built-in offline page, intercept prompt submission, or select another executor automatically. If an executor is offline, select another approved installation with the target configured there.
+Execution is manual on the selected installation. The plugin does not add an agent right-click menu item, modify the built-in offline page, intercept prompt submission, or select another executor automatically. If an executor is offline, select another installation with the target configured there.
 
-Configuration templates: [HTTP webhook](examples/http-webhook.json) and [Wake-on-LAN](examples/wol.json). Replace sample host IDs and endpoints, then explicitly approve the executor.
+Configuration templates: [HTTP webhook](examples/http-webhook.json) and [Wake-on-LAN](examples/wol.json). Replace sample host IDs and endpoints, save them on the selected executor.
 
 ## HTTP and Home Assistant
 
@@ -37,7 +37,6 @@ The selected executor stores its own profiles and credentials. Example settings:
 
 ```json
 {
-  "executorTrusted": true,
   "targets": [
     {
       "serverId": "srv_workstation",
@@ -67,7 +66,6 @@ HTTP supports POST, PUT, and PATCH, configurable headers, and an optional string
 
 ```json
 {
-  "executorTrusted": true,
   "targets": [
     {
       "serverId": "srv_lab",
@@ -87,9 +85,9 @@ The executor needs a non-loopback IPv4 interface on the configured subnet. The p
 
 ## Trust and credentials
 
-Executors default to unapproved. Approval is stored per installation through `executorTrusted` and checked server-side on every wake request, including after revocation. Selecting a host does not approve it. The current public API does not expose a reliable local-daemon identity to this plugin, so local installations also require explicit approval rather than being guessed from a host label.
+Configuring wake actions and credentials on a daemon establishes it as an executor. There is no separate approval flag. Each installation exposes only its own configured targets. Existing Paseo access controls govern who can use that daemon.
 
-The client sends only a configured target ID. The server chooses the stored transport and resolves environment credentials immediately before delivery. No RPC returns resolved plans or accepts an arbitrary URL, body, or transport. The Wake screen receives only target names, IDs, timeouts, and executor approval state.
+The client sends only a configured target ID. The server chooses the stored transport and resolves environment credentials immediately before delivery. No RPC returns resolved plans or accepts an arbitrary URL, body, or transport. The Wake screen receives only target names, IDs, and timeouts.
 
 Settings are ordinary host-side JSON, not a secret vault. The settings editor displays configured URLs and literal headers to clients authorized to edit that installation's settings. Use environment references for authorization headers. A webhook URL is itself a credential. This plugin does not impose a security boundary on other trusted plugins or clients authorized to manage the daemon.
 
@@ -115,7 +113,7 @@ paseo plugin install "$PWD" --id wake-hosts
 
 Install under the same `wake-hosts` runtime ID on each executor to use the shared host picker. Reload the plugin after source changes; do not restart the daemon.
 
-Tests cover explicit-only wake lifetime, reconnection, timeouts, duplicate clicks, disposal, approval and revocation, server-side credential resolution, unknown-target rejection, HTTP delivery and redaction, redirect refusal, and real UDP loopback packet delivery. Loopback tests do not actuate hardware. Cross-platform runtime testing is required before claiming macOS and Windows validation.
+Tests cover explicit-only wake lifetime, reconnection, timeouts, duplicate clicks, disposal, server-side credential resolution, unknown-target rejection, HTTP delivery and redaction, redirect refusal, and real UDP loopback packet delivery. Loopback tests do not actuate hardware. Cross-platform runtime testing is required before claiming macOS and Windows validation.
 
 ## Troubleshooting
 
@@ -123,7 +121,7 @@ Tests cover explicit-only wake lifetime, reconnection, timeouts, duplicate click
 | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | Wake hosts does not appear             | Plugins are enabled, the installation is running, and its sidebar item is visible.                                               |
 | No targets                             | Select the intended executor and add profiles in that installation's plugin settings. Refresh the Wake screen.                   |
-| Wake is disabled                       | Approve the executor, connect it, and add the target to the app's saved hosts. Already-online targets are disabled.              |
+| Wake is disabled                       | Connect the executor and add the target to the app's saved hosts. Already-online targets are disabled.                           |
 | HTTP delivery fails                    | Verify the URL, TLS certificate, method, environment credential, and executor reachability. Redirects are deliberately rejected. |
 | Wake accepted but target stays offline | Check hardware state and the target daemon separately. Endpoint acceptance does not prove successful waking.                     |
 | Immediate Retry behaves the same       | The executor suppresses duplicate target actions for 30 seconds, including failed requests.                                      |
